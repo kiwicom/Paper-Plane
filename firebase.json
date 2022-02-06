@@ -1,0 +1,25 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "nextjsFunc"
+      }
+    ]
+  },
+  "functions": {
+    "source": ".",
+    "predeploy": [
+      "yarn install",
+      "yarn run build"
+    ],
+    "runtime": "nodejs14"
+  },
+  "emulators": {
+    "hosting": {
+      "port": "5002"
+    }
+  }
+}

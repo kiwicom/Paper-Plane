@@ -1,0 +1,84 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "next/core-web-vitals",
+    "@kiwicom/eslint-config",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "plugin:jest-dom/recommended",
+    "plugin:testing-library/dom",
+    "plugin:testing-library/react"
+  ],
+  "plugins": ["node", "@typescript-eslint", "prettier", "jest-dom", "testing-library"],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "globals": {
+    "__DEV__": true
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-non-null-assertion": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "node/file-extension-in-import": [
+      "error",
+      "always",
+      {
+        ".js": "never",
+        ".jsx": "never",
+        ".ts": "never",
+        ".tsx": "never"
+      }
+    ],
+    "testing-library/no-await-sync-events": "error",
+    "testing-library/no-debugging-utils": "error",
+    "testing-library/no-await-sync-query": "error",
+    "testing-library/no-container": "error",
+    "testing-library/no-node-access": "error",
+    "testing-library/no-promise-in-fire-event": "error",
+    "testing-library/no-render-in-setup": [
+      "error",
+      {
+        "allowTestingFrameworkSetupHook": "beforeEach"
+      }
+    ],
+    "testing-library/no-unnecessary-act": "error",
+    "testing-library/no-wait-for-empty-callback": "error",
+    "testing-library/no-wait-for-multiple-assertions": "error",
+    "testing-library/no-wait-for-side-effects": "error",
+    "testing-library/no-wait-for-snapshot": "error",
+    "testing-library/await-async-utils": "error",
+    "testing-library/prefer-presence-queries": "error",
+    "testing-library/prefer-explicit-assert": "error",
+    "testing-library/prefer-query-by-disappearance": "error",
+    "testing-library/prefer-screen-queries": "error",
+    "testing-library/prefer-user-event": "error",
+    "testing-library/prefer-wait-for": "error",
+    "testing-library/render-result-naming-convention": "error",
+    "jest-dom/prefer-checked": "error",
+    "jest/no-empty-title": "off",
+    "jest-dom/prefer-empty": "error",
+    "jest-dom/prefer-enabled-disabled": "error",
+    "jest-dom/prefer-required": "error",
+    "jest-dom/prefer-to-have-attribute": "error",
+    "flowtype/require-valid-file-annotation": "off",
+    "flowtype/no-types-missing-file-annotation": "off",
+    "flowtype/require-inexact-type": "off",
+    "flowtype/no-unused-expressions": "off",
+    "react-hooks/exhaustive-deps": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
+
