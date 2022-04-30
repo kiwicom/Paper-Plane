@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 import useGetProjectDocument from "../../../utils/hooks/useGetProjectDocument";
 import useGetMockGroupCollection from "../../../utils/hooks/useGetMockGroupCollection";
 
-const defaultWebUrlBases = ["localhost:3000", "localhost:8000"];
+const defaultWebUrlBases = ["http://localhost:3000", "http://localhost:8000"];
 
 const Mocks: NextPage = () => {
   const {
@@ -38,7 +38,7 @@ const Mocks: NextPage = () => {
 
   useEffect(() => {
     if (projectData) {
-      const projectUrlBase = new URL(projectData.clientUrl).host;
+      const projectUrlBase = new URL(projectData.clientUrl).origin;
       setWebUrlBaseOptions(
         webUrlBaseOptions.concat({
           value: projectUrlBase,

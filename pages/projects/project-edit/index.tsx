@@ -5,36 +5,40 @@ import Layout from "../../../components/Layout";
 import Box from "@kiwicom/orbit-components/lib/Box";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
-import { Separator } from "@kiwicom/orbit-components";
+import { ListChoice, Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "@kiwicom/orbit-components/lib/Select";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import illustrations from "../../../utils/illustations";
+import { Edit, Visibility } from "@kiwicom/orbit-components/icons";
 
 import { useEffect, useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
-import { ProjectEditForm } from "../../../utils/types";
+import { CollaboratorRoleEnum, ProjectEditForm } from "../../../utils/types";
 import { projectEditValidationSchema } from "../../../utils/validationSchemas";
 import ApiCard from "../../../components/ApiCard";
 import { useRouter } from "next/router";
 import useProjectMutation from "../../../utils/hooks/useProjectMutation";
 import useGetProjectDocument from "../../../utils/hooks/useGetProjectDocument";
+import { useAuth } from "../../../components/contexts/Auth";
+import Tooltip from "@kiwicom/orbit-components/lib/Tooltip";
 
 const ProjectEdit: NextPage = () => {
+  const auth = useAuth();
   const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
     useState<boolean>(false);
   const {
     basePath,
     query: { projectId },
-    push,
   } = useRouter();
   const form = useForm<ProjectEditForm>({
     mode: "all",
     resolver: zodResolver(projectEditValidationSchema),
     defaultValues: {
       apiMockCollection: [],
+      collaborators: {},
     },
   });
 
@@ -47,17 +51,25 @@ const ProjectEdit: NextPage = () => {
 
   const onSubmit = handleSubmit((data) => {
     mutate(data);
-    push("/projects");
   });
 
   const apiMockCollection = useWatch({ name: "apiMockCollection", control });
+  const collaborators = useWatch({ name: "collaborators", control });
 
   useEffect(() => {
+    if (Object.keys(collaborators).length === 0 && auth) {
+      setValue("collaborators", {
+        [auth.email as string]: {
+          email: auth.email as string,
+          role: CollaboratorRoleEnum.ADMIN,
+        },
+      });
+    }
     if (projectId && !projectDocument?.isLoading) {
       const project = projectDocument?.data?.data();
       reset(project);
     }
-  }, [projectId, projectDocument?.isLoading]);
+  }, [projectId, projectDocument?.isLoading, auth]);
 
   return (
     <>
@@ -136,6 +148,23 @@ const ProjectEdit: NextPage = () => {
                 )}
               />
             </Stack>
+            <Separator />
+            <Heading type="title2">Collaborators</Heading>
+            {Object.values(collaborators).map((collaborator) => (
+              <ListChoice
+                icon={
+                  <Tooltip content={collaborator.role}>
+                    {collaborator.role === CollaboratorRoleEnum.ADMIN ? (
+                      <Visibility />
+                    ) : (
+                      <Edit />
+                    )}
+                  </Tooltip>
+                }
+                key={collaborator.email}
+                title={collaborator.email}
+              />
+            ))}
             <Separator />
             <Heading type="title2">Client</Heading>
             <Controller

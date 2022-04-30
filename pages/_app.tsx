@@ -13,6 +13,7 @@ import Chance from "chance";
 import firebase from "../utils/firebase";
 import Faker from "@faker-js/faker";
 import queryClient from "../utils/queryClient";
+import { ToastRoot } from "@kiwicom/orbit-components/lib/Toast";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -47,7 +48,8 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
             <NavContainer>
               <Navbar />
             </NavContainer>
-            <Component {...pageProps} />
+            <ToastRoot placement="top-center" />
+            <Component {...pageProps} dismissTimeout={5000} />
           </GridWrapper>
         </QueryClientProvider>
       </AuthProvider>

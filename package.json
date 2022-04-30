@@ -1,9 +1,13 @@
 {
   "name": "paper-plane",
+  "version": "0.1.1",
   "private": true,
   "author": {
     "name": "Matej Kňazík",
     "email": "mato.knazik@gmail.com"
+  },
+  "engines": {
+    "node": "16"
   },
   "main": "firebaseFunctions.js",
   "scripts": {

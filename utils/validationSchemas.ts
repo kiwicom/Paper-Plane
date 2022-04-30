@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   ApiMockTypeEnum,
+  CollaboratorRoleEnum,
   EndpointMockMethodEnum,
   EndpointMockValidityEnum,
 } from "./types";
@@ -33,6 +34,12 @@ export const projectEditValidationSchema = z.object({
   clientUrl: z.string().url(),
   apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
   apiMockCollection: z.array(apiMockEditValidationSchema),
+  collaborators: z.record(
+    z.object({
+      email: z.string().email(),
+      role: z.nativeEnum(CollaboratorRoleEnum),
+    })
+  ),
 });
 
 export const mockGroupEditValidationSchema = z.object({
@@ -41,6 +48,7 @@ export const mockGroupEditValidationSchema = z.object({
   clientUrl: z.string().url(),
   apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
   apiMockCollection: z.array(apiMockEditValidationSchema),
+  authorEmail: z.string().email(),
 });
 
 export const mockEditValidationSchema = z.object({
@@ -49,4 +57,6 @@ export const mockEditValidationSchema = z.object({
   clientUrl: z.string().url(),
   apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
   apiMockCollection: z.array(apiMockEditValidationSchema),
+  authorEmail: z.string().email(),
+  isLocked: z.boolean(),
 });

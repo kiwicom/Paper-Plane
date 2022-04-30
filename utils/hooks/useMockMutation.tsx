@@ -14,6 +14,9 @@ import {
 import { Mock } from "../types";
 import { UseMutationResult } from "react-query";
 import queryClient from "../queryClient";
+import { createToast } from "@kiwicom/orbit-components/lib/Toast";
+import CheckCircle from "@kiwicom/orbit-components/lib/icons/CheckCircle";
+import { useRouter } from "next/router";
 
 /**
  * Mutates existing mock or adds a new one if mockId not provided
@@ -27,6 +30,7 @@ const useMockMutation = (
   FirestoreError,
   WithFieldValue<Mock>
 > => {
+  const { push } = useRouter();
   const firestore = useFirestore();
   const ref = collection(
     firestore,
@@ -39,12 +43,21 @@ const useMockMutation = (
     },
     {
       onSuccess: () => {
-        queryClient.removeQueries();
+        queryClient.invalidateQueries();
+        createToast(`Mock updated`, { icon: <CheckCircle /> });
+        push(`/projects/${projectId}`);
       },
     }
   );
   const collectionMutation = useFirestoreCollectionMutation<Mock>(
-    ref as CollectionReference<Mock>
+    ref as CollectionReference<Mock>,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+        createToast(`Mock created`, { icon: <CheckCircle /> });
+        push(`/projects/${projectId}`);
+      },
+    }
   );
 
   return mockId ? documentMutation : collectionMutation;

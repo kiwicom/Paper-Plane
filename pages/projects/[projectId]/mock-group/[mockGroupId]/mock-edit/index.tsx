@@ -1,11 +1,13 @@
 import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
+import Text from "@kiwicom/orbit-components/lib/Text";
 import Box from "@kiwicom/orbit-components/lib/Box";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
+import Switch from "@kiwicom/orbit-components/lib/Switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 import { MockEditForm } from "../../../../../../utils/types";
@@ -19,19 +21,25 @@ import useMockMutation from "../../../../../../utils/hooks/useMockMutation";
 import mergeApiMocks from "../../../../../../utils/mergeApiMocks";
 import filterChangedApiMocks from "../../../../../../utils/filterChangedApiMocks";
 import { useEffect } from "react";
+import { useAuth } from "../../../../../../components/contexts/Auth";
+import Lock from "@kiwicom/orbit-components/lib/icons/Lock";
+import LockOpen from "@kiwicom/orbit-components/lib/icons/LockOpen";
+import canDeleteMock from "../../../../../../utils/canDeleteMock";
+import useMockDeletion from "../../../../../../utils/hooks/useMockDeletion";
 
 const MockEdit: NextPage = () => {
+  const auth = useAuth();
   const form = useForm<MockEditForm>({
     mode: "all",
     resolver: zodResolver(mockEditValidationSchema),
     defaultValues: {
       apiMockCollection: [],
+      isLocked: false,
     },
   });
   const {
     basePath,
     query: { projectId, mockGroupId, mockId },
-    push,
   } = useRouter();
   const { handleSubmit, watch, control, reset } = form;
 
@@ -46,6 +54,11 @@ const MockEdit: NextPage = () => {
   );
   const projectDocument = useGetProjectDocument(projectId as string);
   const { mutate } = useMockMutation(
+    projectId as string,
+    mockGroupId as string,
+    mockId as string | undefined
+  );
+  const { mutate: deleteMock } = useMockDeletion(
     projectId as string,
     mockGroupId as string,
     mockId as string | undefined
@@ -66,7 +79,6 @@ const MockEdit: NextPage = () => {
         data.apiMockCollection
       );
       mutate({ ...data, apiMockCollection: changedApiMocks });
-      push(`/projects/${projectId}`);
     }
   });
 
@@ -82,6 +94,7 @@ const MockEdit: NextPage = () => {
       !projectDocument?.isLoading
     ) {
       reset({
+        authorEmail: auth?.email || "",
         mockName: "",
         mockDescription: "",
         clientUrl: mockGroup.clientUrl,
@@ -101,9 +114,12 @@ const MockEdit: NextPage = () => {
     mockGroupDocument?.isLoading,
     projectDocument?.isLoading,
     mockDocument?.isLoading,
+    auth,
   ]);
 
   const apiMockCollection = useWatch({ name: "apiMockCollection", control });
+  const authorEmail = useWatch({ name: "authorEmail", control });
+  const isLocked = useWatch({ name: "isLocked", control });
 
   return (
     <>
@@ -114,16 +130,29 @@ const MockEdit: NextPage = () => {
           mockDocument?.isLoading
         }
         sidebar={
-          <Stack justify="start" direction="column" align="center">
+          <Stack justify="between" direction="column" align="center">
             <Box padding="XLarge" width="100%">
               <Stack direction="column" spacing="XXLarge">
-                <Heading type="display">
-                  {watch("mockName") || "My new mock"}
-                </Heading>
+                <Stack direction="row" align="center" justify="start">
+                  <Heading type="display">
+                    {watch("mockName") || "My new mock"}
+                  </Heading>
+                  {isLocked ? (
+                    <Lock color="warning" />
+                  ) : (
+                    <LockOpen color="success" />
+                  )}
+                </Stack>
+
                 <Heading type="displaySubtitle">
                   {watch("mockDescription") || "description..."}
                 </Heading>
               </Stack>
+            </Box>
+            <Box padding="XLarge" width="100%">
+              <Text type="secondary" size="small">
+                Author: {authorEmail}
+              </Text>
             </Box>
           </Stack>
         }
@@ -155,6 +184,20 @@ const MockEdit: NextPage = () => {
                   />
                 )}
               />
+              <Stack align="center" direction="row">
+                <Text weight="bold">Lock for changes</Text>
+                <Controller
+                  name="isLocked"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      {...field}
+                      checked={isLocked}
+                      icon={isLocked ? <Lock /> : <LockOpen />}
+                    />
+                  )}
+                />
+              </Stack>
             </Stack>
             <Separator />
             <Heading type="title2">Client</Heading>
@@ -202,10 +245,28 @@ const MockEdit: NextPage = () => {
               />
             ))}
             <Separator />
-            <Stack direction="row-reverse">
+            <Stack direction="row-reverse" justify="between">
               <Button size="large" submit>
                 Submit
               </Button>
+              {mockId && (
+                <Button
+                  disabled={
+                    !canDeleteMock(
+                      auth?.email,
+                      projectDocument?.data?.data(),
+                      mockDocument?.data?.data()
+                    )
+                  }
+                  size="large"
+                  type="critical"
+                  onClick={() => {
+                    deleteMock();
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
             </Stack>
           </Stack>
         </form>

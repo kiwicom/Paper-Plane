@@ -14,6 +14,9 @@ import {
 import { MockGroup } from "../types";
 import { UseMutationResult } from "react-query";
 import queryClient from "../queryClient";
+import { useRouter } from "next/router";
+import { createToast } from "@kiwicom/orbit-components/lib/Toast";
+import CheckCircle from "@kiwicom/orbit-components/lib/icons/CheckCircle";
 
 /**
  * Mutates existing mock group or adds a new one if mockGroupId not provided
@@ -26,6 +29,7 @@ const useMockGroupMutation = (
   FirestoreError,
   WithFieldValue<MockGroup>
 > => {
+  const { push } = useRouter();
   const firestore = useFirestore();
   const ref = collection(
     firestore,
@@ -38,12 +42,21 @@ const useMockGroupMutation = (
     },
     {
       onSuccess: () => {
-        queryClient.removeQueries();
+        queryClient.invalidateQueries();
+        createToast(`Mock Group updated`, { icon: <CheckCircle /> });
+        push(`/projects/${projectId}`);
       },
     }
   );
   const collectionMutation = useFirestoreCollectionMutation<MockGroup>(
-    ref as CollectionReference<MockGroup>
+    ref as CollectionReference<MockGroup>,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+        createToast(`Mock Group created`, { icon: <CheckCircle /> });
+        push(`/projects/${projectId}`);
+      },
+    }
   );
 
   return mockGroupId ? documentMutation : collectionMutation;

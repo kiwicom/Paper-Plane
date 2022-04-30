@@ -27,7 +27,10 @@ const mergeApiMocks = (
       mockGroupApiMock?.endpointMockCollection,
       mockApiMock?.endpointMockCollection,
     ].map((endpointMockCollection) =>
-      _.keyBy(endpointMockCollection, "endpointPath")
+      _.keyBy(
+        endpointMockCollection,
+        (endpointMock) => `${endpointMock.method}_${endpointMock.endpointPath}`
+      )
     );
 
     const endpointMockCollection = Object.values(

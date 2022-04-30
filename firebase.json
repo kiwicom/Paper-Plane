@@ -1,21 +1,59 @@
 {
   "hosting": {
     "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "yarn.lock",
+      "firebase.json",
+      "**/node_modules/**",
+      "**/public/**",
+      "**/styles/**",
+      "**/.next/cache/**",
+      "utils/**",
+      "pages/**",
+      "components/**",
+      "tsconfig.json",
+      "tsconfig.tsbuildinfo",
+      "README.md"
+    ],
+    "headers": [
+      {
+        "source": "/service-worker.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "**/**",
         "function": "nextjsFunc"
       }
     ]
   },
   "functions": {
     "source": ".",
+    "ignore": [
+      "yarn.lock",
+      "firebase.json",
+      "**/node_modules/**",
+      "**/public/**",
+      "**/styles/**",
+      "**/.next/cache/**",
+      "utils/**",
+      "pages/**",
+      "components/**",
+      "tsconfig.json",
+      "tsconfig.tsbuildinfo",
+      "README.md"
+    ],
     "predeploy": [
       "yarn install",
       "yarn run build"
     ],
-    "runtime": "nodejs14"
+    "runtime": "nodejs16"
   },
   "emulators": {
     "hosting": {

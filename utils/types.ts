@@ -34,6 +34,19 @@ export enum ApiMockTypeEnum {
   CUSTOM = "Custom",
 }
 
+export enum CollaboratorRoleEnum {
+  ADMIN = "Admin",
+  EDITOR = "Editor",
+}
+
+type Collaborators = Record<
+  string,
+  {
+    email: string;
+    role: CollaboratorRoleEnum;
+  }
+>;
+
 export type ApiMock = {
   type: ApiMockTypeEnum;
   title: string;
@@ -62,6 +75,8 @@ export type MockEditForm = {
   clientUrl: string;
   apiOverrideUrlParamName: string;
   apiMockCollection: Array<ApiMock>;
+  authorEmail: string;
+  isLocked: boolean;
 };
 
 export type MockGroupEditForm = {
@@ -70,12 +85,14 @@ export type MockGroupEditForm = {
   clientUrl: string;
   apiOverrideUrlParamName: string;
   apiMockCollection: Array<ApiMock>;
+  authorEmail: string;
 };
 
 export type ProjectEditForm = {
   projectName: string;
   projectDescription: string;
   illustration: IllustrationProps["name"];
+  collaborators: Collaborators;
   clientUrl: string;
   apiOverrideUrlParamName: string;
   apiMockCollection: Array<ApiMock>;

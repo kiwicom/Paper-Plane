@@ -49,7 +49,7 @@ const Home: NextPage = () => {
       <Box position="fixed" bottom="20px" right="20px">
         <TextLink
           type="secondary"
-          href="https://github.com/D1LL1G4F/Paper-Plane"
+          href="https://github.com/kiwicom/Paper-Plane"
         >
           <Image src={GitHubLogo} width="42px" height="42px" alt="GitHub" />
         </TextLink>

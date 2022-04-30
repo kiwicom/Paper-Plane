@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
+import Text from "@kiwicom/orbit-components/lib/Text";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Box from "@kiwicom/orbit-components/lib/Box";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -18,8 +19,10 @@ import { useEffect } from "react";
 import useGetProjectDocument from "../../../../../utils/hooks/useGetProjectDocument";
 import mergeApiMocks from "../../../../../utils/mergeApiMocks";
 import filterChangedApiMocks from "../../../../../utils/filterChangedApiMocks";
+import { useAuth } from "../../../../../components/contexts/Auth";
 
 const MockGroupEdit: NextPage = () => {
+  const auth = useAuth();
   const form = useForm<MockGroupEditForm>({
     mode: "all",
     resolver: zodResolver(mockGroupEditValidationSchema),
@@ -30,7 +33,6 @@ const MockGroupEdit: NextPage = () => {
   const {
     basePath,
     query: { projectId, mockGroupId },
-    push,
   } = useRouter();
 
   const { handleSubmit, watch, control, reset } = form;
@@ -58,11 +60,11 @@ const MockGroupEdit: NextPage = () => {
         data.apiMockCollection
       );
       mutate({ ...data, apiMockCollection: changedApiMocks });
-      push(`/projects/${projectId}`);
     }
   });
 
   const apiMockCollection = useWatch({ name: "apiMockCollection", control });
+  const authorEmail = useWatch({ name: "authorEmail", control });
 
   useEffect(() => {
     const project = projectDocument?.data?.data();
@@ -74,6 +76,7 @@ const MockGroupEdit: NextPage = () => {
       !projectDocument?.isLoading
     ) {
       reset({
+        authorEmail: auth?.email || "",
         mockGroupName: "",
         mockGroupDescription: "",
         clientUrl: project.clientUrl,
@@ -87,14 +90,19 @@ const MockGroupEdit: NextPage = () => {
         ),
       });
     }
-  }, [projectId, mockGroupDocument?.isLoading, projectDocument?.isLoading]);
+  }, [
+    projectId,
+    mockGroupDocument?.isLoading,
+    projectDocument?.isLoading,
+    auth,
+  ]);
 
   return (
     <>
       <Layout
         isLoading={mockGroupDocument?.isLoading || projectDocument?.isLoading}
         sidebar={
-          <Stack justify="start" direction="column" align="center">
+          <Stack justify="between" direction="column" align="center">
             <Box padding="XLarge" width="100%">
               <Stack direction="column" spacing="XXLarge">
                 <Heading type="display">
@@ -104,6 +112,11 @@ const MockGroupEdit: NextPage = () => {
                   {watch("mockGroupDescription") || "description..."}
                 </Heading>
               </Stack>
+            </Box>
+            <Box padding="XLarge" width="100%">
+              <Text type="secondary" size="small">
+                Author: {authorEmail}
+              </Text>
             </Box>
           </Stack>
         }

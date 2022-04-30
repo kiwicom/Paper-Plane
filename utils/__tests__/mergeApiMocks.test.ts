@@ -26,6 +26,13 @@ describe("mergeApiMocks", () => {
           method: EndpointMockMethodEnum.GET,
           validity: EndpointMockValidityEnum.VALID,
         },
+        {
+          endpointPath: "/endpoint",
+          responseStatus: 200,
+          responseObject: {},
+          method: EndpointMockMethodEnum.POST,
+          validity: EndpointMockValidityEnum.VALID,
+        },
       ],
     },
     {
@@ -86,6 +93,7 @@ describe("mergeApiMocks", () => {
         endpointMockCollection: [
           mockApiMockCollection[0].endpointMockCollection[0],
           projectApiMockCollection[0].endpointMockCollection[1],
+          projectApiMockCollection[0].endpointMockCollection[2],
         ],
       },
       mockGroupApiMockCollection[0],
