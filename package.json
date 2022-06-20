@@ -28,6 +28,9 @@
     "lint",
     "test"
   ],
+  "resolutions": {
+    "protobufjs": "^6.11.3"
+  },
   "dependencies": {
     "@faker-js/faker": "^6.1.2",
     "@hookform/resolvers": "^2.8.8",
