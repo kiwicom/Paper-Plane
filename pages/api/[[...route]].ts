@@ -64,7 +64,7 @@ export default async function handler(
     (acc, apiMock) => {
       const matchingEndpointMock = apiMock.endpointMockCollection.find((em) => {
         const regexp = pathToRegexp(
-          em.endpointPath.replace("{", ":").replace("}", "")
+          em.endpointPath.replaceAll("{", ":").replaceAll("}", "")
         );
         return regexp.test(endpoint) && em.method === req.method?.toLowerCase();
       });
