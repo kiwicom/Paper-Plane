@@ -82,7 +82,7 @@ _*only required for deployment_
 4. (Continuous deployment through GitHub Actions)
    - Move environment variables from `.env.local` to your [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
    - Enable GitHub Actions in your repository
-
+   - Enable [Artifact Registry API](https://console.cloud.google.com/marketplace/product/google/artifactregistry.googleapis.com) on your Google Cloud project
    - ⚠️ Service Account stored in GitHub secret `FIREBASE_SERVICE_ACCOUNT_PAPER_PLANE` will require following GCP IAM roles
         * **Cloud Functions Developer** - Cloud Functions deployment
         * **Firebase Authentication Admin** - Full read/write access to Firebase Authentication resources
