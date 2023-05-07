@@ -102,7 +102,7 @@ _*only required for deployment_
 ## 🚧 Roadmap
 
 - [x] OpenAPI's validation during mock editing and mock creation process
-- [ ] Updating Projects's API endpoints (add new endpoints if OpenAPI schema has new ones) 
+- [x] Updating Projects's API endpoints (add new endpoints if OpenAPI schema has new ones) 
 - [ ] Validating mocks against OpenAPI schema periodically or on each api request and updating mock validity status in Firestore
 - [ ] Automatic repair of invalid mocks
 - [ ] Creating non-OpenAPI API mocks

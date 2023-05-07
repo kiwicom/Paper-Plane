@@ -212,6 +212,7 @@ const ProjectEdit: NextPage = () => {
             </Stack>
             {apiMockCollection.map((apiMock, index) => (
               <ApiCard
+                allowApiUpdate
                 fieldArrayName={`apiMockCollection.${index}.endpointMockCollection`}
                 key={index}
                 control={control}

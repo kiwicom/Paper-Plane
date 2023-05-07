@@ -4,11 +4,12 @@ import axios from "axios";
 import ZSchema from "z-schema";
 
 const useGetOpenAPISchema = (
-  openAPIUrl: QueryKey
+  openAPIUrl: QueryKey | null
 ): UseQueryResult<Schema | null, Error> =>
   useQuery(
     ["useGetOpenAPISchema", openAPIUrl],
     async () => {
+      if (!openAPIUrl) return null;
       const { data: schema } = await axios(openAPIUrl.toString());
 
       ZSchema.registerFormat("int64", (val: unknown) => Number.isInteger(val));
