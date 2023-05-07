@@ -2,6 +2,7 @@ import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Collapse from "@kiwicom/orbit-components/lib/Collapse";
 import Text from "@kiwicom/orbit-components/lib/Text";
 import Tooltip from "@kiwicom/orbit-components/lib/Tooltip";
+import { Clock } from "@kiwicom/orbit-components/icons";
 import {
   ApiMock,
   EndpointMockValidityEnum,
@@ -15,12 +16,17 @@ import { useEffect } from "react";
 import useGetOpenAPISchema from "../utils/hooks/useGetOpenAPISchema";
 import EndpointCard from "./EndpointCard";
 import EndpointMockValidityIcon from "./EndpointMockValidityIcon";
+import isAPIMockUpdated from "../utils/isAPIMockUpdated";
+import Button from "@kiwicom/orbit-components/lib/Button";
+import getUpdatedAPIMock from "../utils/getUpdatedAPIMock";
+import { Schema } from "json-schema-faker";
 
 type ApiCardProps = ApiMock &
   (
     | {
         control: Control<ApiMock, unknown>;
         fieldArrayName: "endpointMockCollection";
+        allowApiUpdate?: boolean;
       }
     | {
         control:
@@ -28,21 +34,25 @@ type ApiCardProps = ApiMock &
           | Control<MockGroupEditForm, unknown>
           | Control<MockEditForm, unknown>;
         fieldArrayName: `apiMockCollection.${number}.endpointMockCollection`;
+        allowApiUpdate?: boolean;
       }
   );
 
 const ApiCard = ({
+  type,
   title,
   description,
   openAPISchemaUrl,
   endpointMockCollection,
   control,
   fieldArrayName,
+  allowApiUpdate,
 }: ApiCardProps): JSX.Element => {
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: control as Control<ApiMock, unknown>,
     name: fieldArrayName as "endpointMockCollection",
   });
+
   const { data: openAPISchema } = useGetOpenAPISchema(openAPISchemaUrl);
 
   useEffect(() => {
@@ -55,9 +65,48 @@ const ApiCard = ({
   const hasSchemaViolatingResponse = fields.some(
     (endpoint) => endpoint.validity === EndpointMockValidityEnum.VIOLATES_SCHEMA
   );
+  const isOutdated = openAPISchema
+    ? isAPIMockUpdated(
+        {
+          type,
+          title,
+          description,
+          openAPISchemaUrl,
+          endpointMockCollection,
+        },
+        openAPISchema
+      )
+    : false;
+
+  const updateApiMockCollection = () => {
+    const updatedApiMock = getUpdatedAPIMock(
+      {
+        type,
+        title,
+        description,
+        openAPISchemaUrl,
+        endpointMockCollection,
+      },
+      openAPISchema as Schema
+    );
+    replace(updatedApiMock.endpointMockCollection);
+  };
 
   return (
     <Collapse
+      actions={
+        allowApiUpdate &&
+        isOutdated && (
+          <Button
+            onClick={updateApiMockCollection}
+            circled
+            size="small"
+            type="primarySubtle"
+          >
+            Update
+          </Button>
+        )
+      }
       label={
         <Stack direction="row" align="center">
           <Tooltip size="medium" content={openAPISchemaUrl}>
@@ -70,6 +119,11 @@ const ApiCard = ({
             <EndpointMockValidityIcon
               validity={EndpointMockValidityEnum.VIOLATES_SCHEMA}
             />
+          )}
+          {isOutdated && (
+            <Tooltip content="Mocks are outdated. Please update API Mock.">
+              <Clock color="warning" />
+            </Tooltip>
           )}
         </Stack>
       }
