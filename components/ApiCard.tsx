@@ -5,6 +5,7 @@ import Tooltip from "@kiwicom/orbit-components/lib/Tooltip";
 import { Clock } from "@kiwicom/orbit-components/icons";
 import {
   ApiMock,
+  ApiMockTypeEnum,
   EndpointMockValidityEnum,
   MockEditForm,
   MockGroupEditForm,
@@ -53,7 +54,9 @@ const ApiCard = ({
     name: fieldArrayName as "endpointMockCollection",
   });
 
-  const { data: openAPISchema } = useGetOpenAPISchema(openAPISchemaUrl);
+  const { data: openAPISchema } = useGetOpenAPISchema(
+    type === ApiMockTypeEnum.OPENAPI ? openAPISchemaUrl : null
+  );
 
   useEffect(() => {
     remove();
