@@ -80,5 +80,7 @@ export default async function handler(
     return res.status(404).json({ detail: "Mock not found" });
   }
 
-  return res.status(200).json(endpointMock.responseObject);
+  return res
+    .status(endpointMock.responseStatus)
+    .json(endpointMock.responseObject);
 }
